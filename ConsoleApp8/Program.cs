@@ -7,12 +7,18 @@ namespace ConsoleApp8
         static void Main(string[] args)
         {
             char[,] alphabetList = new char[26, 26];
-            
+            string Message = "";
+            string EncryptedMessage = "";
+            string Key = "";
+            string KeyMask = "";
+
             List<char> recordedMessage = new List<char>();
             List<char> recordedKey = new List<char>();
             List<char> recordedkeyStream = new List<char>();
             List<char> recordedEncrypted = new List<char>();
             List<char> recordedDecrypted = new List<char>();
+
+            // MATRIX CREATION
 
             for (int x = 0; x < 26; x++)
             {
@@ -48,11 +54,51 @@ namespace ConsoleApp8
             {
                 Console.WriteLine("\nChosen Mode: Encryption\n");
 
-                Console.Write("Input your desired message: ");
-                string Message = Console.ReadLine().ToUpper();
 
-                Console.Write("Input your desired key: ");
-                string Key = Console.ReadLine().ToUpper();
+                if (File.Exists(@"C:\Users\Admin\source\repos\Simplified_Finals\ConsoleApp8\Message.txt"))
+                {
+                    Console.Write("Detected File 'Encrypted Message.txt'!");
+                    using (StreamReader sr = new StreamReader(@"C:\Users\Admin\source\repos\Simplified_Finals\ConsoleApp8\Message.txt"))
+                    {
+                        Message = sr.ReadLine();
+                    }
+                }
+
+                else
+                {
+                    Console.Write("Input your desired message: ");
+                    Message = Console.ReadLine().ToUpper();
+
+                    using (StreamWriter sw = new StreamWriter(@"C:\Users\Admin\source\repos\Simplified_Finals\ConsoleApp8\Message.txt"))
+                    {
+                        sw.WriteLine(Message);
+                    }
+                }
+
+                if (File.Exists("Key.txt"))
+                {
+                    Console.Write("Detected File 'Key.txt'!");
+
+                    using (StreamReader sr = new StreamReader(@"C:\Users\Admin\source\repos\Simplified_Finals\ConsoleApp8\Key.txt"))
+                    {
+                        Key = sr.ReadLine();
+                    }
+
+                }
+
+                else
+                {
+                    Console.Write("Input your desired key: ");
+                    Key = Console.ReadLine().ToUpper();
+
+                    using (StreamWriter sw = new StreamWriter(@"C:\Users\Admin\source\repos\Simplified_Finals\ConsoleApp8\Key.txt"))
+                    {
+                        sw.WriteLine(Message);
+                    }
+                }
+
+
+                // CHECKING FOR SPECIAL CHARACTERS
 
                 for (int x = 0; x < Message.Length; x++)
                 {
@@ -65,6 +111,7 @@ namespace ConsoleApp8
                         }
                     }
                 }
+
                 for (int x = 0; x < Key.Length; x++)
                 {
                     for (int y = 0; y < 26; y++)
@@ -76,6 +123,8 @@ namespace ConsoleApp8
                         }
                     }
                 }
+
+                // CREATION OF KEY MASK
 
                 int Index = 0;
                 for (int x = 0; x <= recordedMessage.Count - 1; x++)
@@ -88,6 +137,8 @@ namespace ConsoleApp8
                     Index++;
                 }
 
+                // ENCRYPTION
+
                 for (int x = 0; x < recordedMessage.Count; x++)
                 {
                     int index1 = (((int)(recordedMessage[x])) - 65);
@@ -96,63 +147,106 @@ namespace ConsoleApp8
                     recordedEncrypted.Add(alphabetList[index1, index2]);
                 }
 
-                Console.WriteLine();
                 Console.Write("Encrypted Message: ");
-                foreach (char letter in recordedEncrypted)
+                using (StreamWriter sw = new StreamWriter(@"C:\Users\Admin\source\repos\Simplified_Finals\ConsoleApp8\EncryptedMessage.txt"))
                 {
-                    Console.Write(letter);
+                    foreach (char letter in recordedEncrypted)
+                    {
+                        sw.Write(letter);
+                        Console.Write(letter);
+                    }
                 }
 
-                Console.WriteLine();
                 Console.Write("Key Mask: ");
-                foreach (char letter in recordedkeyStream)
+                using (StreamWriter sw = new StreamWriter(@"C:\Users\Admin\source\repos\Simplified_Finals\ConsoleApp8\KeyMask.txt"))
                 {
-                    Console.Write(letter);
+                    foreach (char letter in recordedkeyStream)
+                    {
+                        sw.Write(letter);
+                        Console.Write(letter);
+                    }
                 }
             }
             else if (choiceInput == 2)
             {
                 Console.WriteLine("\nChosen Mode: Decryption\n");
 
-                Console.Write("Input your encrypted message: ");
-                string encryptedMessage = Console.ReadLine().ToUpper();
+                // CHECKING IF FILE EXISTS
 
-                Console.Write("Input your Key: ");
-                string Key = Console.ReadLine().ToUpper();
+                if (File.Exists(@"C:\Users\Admin\source\repos\Simplified_Finals\ConsoleApp8\EncryptedMessage.txt"))
+                {
+                    using (StreamReader sr = new StreamReader(@"C:\Users\Admin\source\repos\Simplified_Finals\ConsoleApp8\EncryptedMessage.txt"))
+                    {
+                        EncryptedMessage = sr.ReadLine();
+                    }
+                }
 
-                for (int x = 0; x < encryptedMessage.Length; x++)
+                else
+                {
+                    Console.Write("Input your encrypted message: ");
+                    EncryptedMessage = Console.ReadLine().ToUpper();
+                }
+
+                // CHECKING FOR SPECIAL CHARACTERS
+
+                for (int x = 0; x < EncryptedMessage.Length; x++)
                 {
                     for (int y = 0; y < 26; y++)
                     {
-                        if (encryptedMessage[x] == 65 + y)
+                        if (EncryptedMessage[x] == 65 + y)
                         {
-                            recordedEncrypted.Add(encryptedMessage[x]);
+                            recordedEncrypted.Add(EncryptedMessage[x]);
                             break;
                         }
                     }
                 }
 
-                for (int x = 0; x < Key.Length; x++)
+                // CHECKING IF FILE EXISTS
+
+                if (File.Exists(@"C:\Users\Admin\source\repos\Simplified_Finals\ConsoleApp8\KeyMask.txt"))
                 {
-                    for (int y = 0; y < 26; y++)
+                    using (StreamReader sr = new StreamReader(@"C:\Users\Admin\source\repos\Simplified_Finals\ConsoleApp8\KeyMask.txt"))
                     {
-                        if (Key[x] == 65 + y)
-                        {
-                            recordedKey.Add(Key[x]);
-                            break;
-                        }
+                        KeyMask = sr.ReadLine();
+                    }
+
+                    for (int x = 0; x < KeyMask.Length; x++)
+                    {
+                        recordedkeyStream.Add(KeyMask[x]);
                     }
                 }
-
-                int index = 0;
-                for (int x = 0; x <= recordedEncrypted.Count - 1; x++)
+                else
                 {
-                    if (index > recordedKey.Count - 1)
+
+                    Console.Write("Input your Key: ");
+                    Key = Console.ReadLine().ToUpper();
+
+                    // CHECKING FOR SPECIAL CHARACTERS
+
+                    for (int x = 0; x < Key.Length; x++)
                     {
-                        index = 0;
+                        for (int y = 0; y < 26; y++)
+                        {
+                            if (Key[x] == 65 + y)
+                            {
+                                recordedKey.Add(Key[x]);
+                                break;
+                            }
+                        }
                     }
-                    recordedkeyStream.Add(recordedKey[index]);
-                    index++;
+
+                    // CREATION OF KEY MASK FROM KEY
+
+                    int index = 0;
+                    for (int x = 0; x <= recordedEncrypted.Count - 1; x++)
+                    {
+                        if (index > recordedKey.Count - 1)
+                        {
+                            index = 0;
+                        }
+                        recordedkeyStream.Add(recordedKey[index]);
+                        index++;
+                    }
                 }
 
                 for (int x = 0; x < recordedkeyStream.Count; x++)
@@ -168,7 +262,7 @@ namespace ConsoleApp8
                 }
 
                 Console.WriteLine("\n");
-                Console.Write("Decrypted Message");
+                Console.Write("Decrypted Message: ");
                 foreach (char letter in recordedDecrypted)
                 {
                     Console.Write(letter);
@@ -181,9 +275,10 @@ namespace ConsoleApp8
                     Console.Write(letter);
                 }
             }
-            Console.WriteLine("\n\n");
+            Console.WriteLine("\n");
         }
     }
+
 }
 
     
